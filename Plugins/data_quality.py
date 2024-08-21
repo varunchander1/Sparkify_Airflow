@@ -28,10 +28,16 @@ class DataQualityOperator(BaseOperator):
             field = self.tables[key][1]
 
             check1_sql = f"SELECT Count(*) FROM {table}"
-            result = redshift.get_first(check1_sql) 
-            logging.info(f"Table: {table} has {result} rows")
+            result = redshift.get_first(check1_sql)
+            logging.info(f"Table: {table} has {result[0]} rows")
+            if result[0] < 1 :
+                raise ValueError(f"Data quality check failed. {table} returned no results")
+            
             
             check2_sql = f"SELECT Count(*) FROM {table} where {field} IS NULL"
             recs = redshift.get_first(check2_sql) 
-            logging.info(f"Field: {field} in table: {table} has {recs} NULL rows")
+            logging.info(f"Field: {field} in table: {table} has {recs[0]} NULL rows")
+            if recs[0] == result[0] :
+                raise ValueError(f"Data quality check failed. Field: {field} in table: {table} has All NULL rows")
+
 
