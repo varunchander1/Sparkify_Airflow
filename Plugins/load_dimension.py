@@ -27,7 +27,7 @@ class LoadDimensionOperator(BaseOperator):
 
         if self.action == "reload":
             self.log.info("Clearing data from destination Redshift table")
-            redshift.run("DELETE FROM {}".format(self.table))
+            redshift.run("TRUNCATE TABLE {}".format(self.table))
 
         self.log.info("Inserting data from staging table into Dim table")
         custom_sql = self.query
